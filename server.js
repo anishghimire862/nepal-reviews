@@ -20,6 +20,7 @@ const db = require("./app/models");
 db.sequelize.sync();
 
 const PORT = process.env.PORT || 8080;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}.`);
 });
@@ -27,4 +28,4 @@ app.listen(PORT, () => {
 var routes = require("./app/routes/routes.js");
 app.use(routes);
 
-module.exports = app
+module.exports = app;
