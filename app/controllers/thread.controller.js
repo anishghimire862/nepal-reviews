@@ -3,7 +3,6 @@ const Thread = db.threads;
 const Op = db.Sequelize.Op;
 
 exports.create = (req, res) => {
-  console.log(req.user)
   const thread = {
     title: req.body.title,
     description: req.body.description,
@@ -50,7 +49,6 @@ exports.findOne = (req, res) => {
 };
 
 exports.update = (req, res) => {
-  console.log(req.user)
   let threadId = req.params.threadId;
   Thread.findByPk(threadId)
     .then(data => {
