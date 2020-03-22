@@ -54,6 +54,5 @@ describe("Tests for /user endpoint", () => {
     await User.destroy({
       where: { email: 'admin@nepalreviews.com' }
     });
-    await app.close()
   });
 });
