@@ -36,6 +36,19 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.findOne = (req, res) => {
+	let reviewId = req.params.reviewId;
+	Review.findByPk(reviewId)
+		.then(data => {
+			res.send(data);
+		})
+		.catch(err => {
+			res.status(500).send({
+				message: err.message || "Some error occured while retriving threads."
+			});
+		});
+};
+
 exports.update = (req, res) => {
   let reviewId = req.params.reviewId;
   Review.findByPk(reviewId)
