@@ -10,7 +10,7 @@ exports.create = (req, res) => {
     creator: req.user,
     published: req.body.published
   }
-
+	console.log(thread)
   Thread.create(thread)
     .then(data => {
       res.send(data);
@@ -24,7 +24,11 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-  Thread.findAll()
+  Thread.findAll({
+		order: [
+			['createdAt', 'desc']
+		]
+	})
     .then(data => {
       res.send(data);
     })
