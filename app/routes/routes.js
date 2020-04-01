@@ -40,6 +40,10 @@ router.post('/reviews',
   ReviewController.create
 );
 
+router.get('/review/:reviewId', 
+	ReviewController.findOne
+);
+
 router.get('/reviews/:threadId',
   ReviewController.findAll
 );
@@ -60,8 +64,12 @@ router.post('/user',
   UserController.create
 )
 
-router.post('/login',
+router.post('/api/auth/login',
   UserController.login
+)
+
+router.get('/api/auth/user',
+	UserController.user
 )
 
 module.exports = router;
