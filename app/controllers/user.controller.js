@@ -50,3 +50,22 @@ exports.login = (req, res) => {
     }
   })(req, res);
 };
+
+exports.user = (req, res) => {
+	if (req.headers && req.headers.authorization) {
+  	var authorization = req.headers.authorization.split(' ')[1],
+    	decoded;
+    try {
+    	decoded = jwt.verify(authorization, jwtConfig.secret);
+    } catch (e) {
+    	return res.status(401).send('unauthorized');
+    }
+   	User.findOne({where: {email: decoded} })
+			.then(user => {
+				if(user) {
+			    res.status(200).json({ loggedIn: true, data: user })
+				}
+			})
+		// res.status(200).json({ loggedIn: true, data: {email: 'anish'} })
+  }
+};
