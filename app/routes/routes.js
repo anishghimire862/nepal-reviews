@@ -9,6 +9,8 @@ var ThreadController = require('../controllers/thread.controller.js');
 
 var ReviewController = require('../controllers/review.controller.js');
 
+var RatingController = require('../controllers/rating.controller.js');
+
 // threads route
 
 router.post('/threads',
@@ -57,6 +59,25 @@ router.delete('/reviews/:reviewId',
   passport.authenticate('jwt', {session: false}),
   ReviewController.delete
 );
+
+//threads rating routes
+
+router.post('/ratings',
+  passport.authenticate('jwt', {session: false}),
+  RatingController.create
+);
+
+router.get('/ratings/:threadId',
+  RatingController.findAll
+);
+
+router.get('/reviews-ratings',
+  RatingController.findReviewsAndRatings
+)
+
+router.get('/current-user-star/:threadId/:userId',
+	RatingController.findStarOfCurrentUser
+)
 
 // user login/registration routes
 

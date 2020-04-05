@@ -3,8 +3,8 @@ module.exports = (sequelize, Sequelize) => {
     description: {
       type: Sequelize.STRING
     },
-    creator: {
-      type: Sequelize.STRING
+    userId: {
+      type: Sequelize.INTEGER
     },
     threadId: {
       type: Sequelize.INTEGER

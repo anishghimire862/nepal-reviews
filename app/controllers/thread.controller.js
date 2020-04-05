@@ -1,5 +1,7 @@
 const db = require("../models");
 const Thread = db.threads;
+const User = db.users;
+const Rating = db.ratings;
 const Op = db.Sequelize.Op;
 
 exports.create = (req, res) => {
@@ -7,10 +9,9 @@ exports.create = (req, res) => {
     title: req.body.title,
     description: req.body.description,
     category: req.body.category,
-    creator: req.user,
+    userId: req.user.userId,
     published: req.body.published
   }
-	console.log(thread)
   Thread.create(thread)
     .then(data => {
       res.send(data);
@@ -25,6 +26,12 @@ exports.create = (req, res) => {
 
 exports.findAll = (req, res) => {
   Thread.findAll({
+		include: [{
+			model: User,
+			as: 'users'
+		},
+		{model: Rating, as: 'ratings'}
+		],
 		order: [
 			['createdAt', 'desc']
 		]
@@ -41,7 +48,14 @@ exports.findAll = (req, res) => {
 
 exports.findOne = (req, res) => {
   let threadId = req.params.threadId;
-  Thread.findByPk(threadId)
+  Thread.findByPk(threadId, {
+		include: [{
+			model: User,
+			as: 'users'
+		},
+		{ model: Rating, as: 'ratings' }
+		]
+	})
     .then(data => {
       res.send(data);
     })
@@ -56,9 +70,9 @@ exports.update = (req, res) => {
   let threadId = req.params.threadId;
   Thread.findByPk(threadId)
     .then(data => {
-      let creator = data.creator
-      let loggedInUser = req.user
-
+      let creator = data.userId
+      let loggedInUser = req.user.userId
+    
       if(creator == loggedInUser) {
         Thread.update(req.body, {
           where: { id: threadId }
@@ -92,8 +106,8 @@ exports.delete = (req, res) => {
 
   Thread.findByPk(threadId)
     .then(data => {
-      let creator = data.creator;
-      let loggedInUser = req.user;
+      let creator = data.userId;
+      let loggedInUser = req.user.userId;
 
       if(creator == loggedInUser) {
         Thread.destroy({

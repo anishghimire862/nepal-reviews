@@ -21,7 +21,9 @@ exports.create = (req, res) => {
           bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
             const user = {
               email: req.body.email,
-              password: hash
+              password: hash,
+              username: req.body.username,
+              name: req.body.name
             }
             User.create(user)
             .then(data => {
@@ -45,8 +47,9 @@ exports.login = (req, res) => {
     }
     else {
       let email = req.body['email'];
-      const token = jwt.sign(email, jwtConfig.secret);
-      res.status(200).json({ message: info.message, token: token });
+      let userId = user.id
+      const token = jwt.sign({email, userId}, jwtConfig.secret);
+      res.status(200).json({ message: info.message, token: token, user: user });
     }
   })(req, res);
 };
@@ -60,12 +63,11 @@ exports.user = (req, res) => {
     } catch (e) {
     	return res.status(401).send('unauthorized');
     }
-   	User.findOne({where: {email: decoded} })
+   	User.findOne({where: {email: decoded.email} })
 			.then(user => {
 				if(user) {
 			    res.status(200).json({ loggedIn: true, data: user })
 				}
 			})
-		// res.status(200).json({ loggedIn: true, data: {email: 'anish'} })
   }
 };

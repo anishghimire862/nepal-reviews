@@ -12,14 +12,14 @@ describe("Tests for /reviews endpoint", () => {
 
     // token for all valid thread creator
 
-    const response = await superset(app).post('/login').send({
+    const response = await superset(app).post('/api/auth/login').send({
       email: 'anishghimire862@gmail.com',
       password: 'anish'
     });
 
     // token for all invalid thread creator
 
-    const invalidResponse = await superset(app).post('/login').send({
+    const invalidResponse = await superset(app).post('/api/auth/login').send({
       email: 'anishghimire@gmail.com',
       password: 'anish'
     });

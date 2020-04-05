@@ -19,9 +19,6 @@ passport.use(new LocalStrategy(
   },
   function(email, password, done) {
 
-    // Using AND
-    // User.findOne({ where: {[Op.and]: [{email: email}, {password: password}]} }) 
-
     User.findOne({ where: {email: email} })
       .then(user => {
         if(user) {

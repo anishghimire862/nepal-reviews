@@ -6,10 +6,6 @@ const User = db.users;
 
 describe("Tests for /user endpoint", () => {
 
-  it("tests our testing framework if it works", () => {
-    expect(2).toBe(2);
-  });
-
   it("tests the post request for user registration for valid email address", async () => {
     const response = await superset(app).post('/user').send({
       email: 'admin@nepalreviews.com',
@@ -31,7 +27,7 @@ describe("Tests for /user endpoint", () => {
   });
 
   it("tests the post request for user login with valid login details", async () => {
-    const response = await superset(app).post('/login').send({
+    const response = await superset(app).post('/api/auth/login').send({
       email: 'admin@nepalreviews.com',
       password: 'nepalreviews'
     });
@@ -41,7 +37,7 @@ describe("Tests for /user endpoint", () => {
   });
 
   it("tests the post request for user login with invalid login details", async () => {
-    const response = await superset(app).post('/login').send({
+    const response = await superset(app).post('/api/auth/login').send({
       email: 'admin@nepalreview.com',
       password: 'nepalreviews'
     });

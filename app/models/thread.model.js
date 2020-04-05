@@ -9,11 +9,8 @@ module.exports = (sequelize, Sequelize) => {
     category: {
       type: Sequelize.STRING
     },
-    creator: {
-      type: Sequelize.STRING
-    },
-    published: {
-      type: Sequelize.DATE
+    userId: {
+      type: Sequelize.INTEGER
     }
   });
   return Thread;

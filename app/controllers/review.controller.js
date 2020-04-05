@@ -5,7 +5,7 @@ const Op = db.Sequelize.Op;
 exports.create = (req, res) => {
   const review = {
     description: req.body.description,
-    creator: req.user,
+    userId: req.user.userId,
     threadId: req.body.threadId
   }
 
@@ -53,8 +53,8 @@ exports.update = (req, res) => {
   let reviewId = req.params.reviewId;
   Review.findByPk(reviewId)
     .then(data => {
-      let creator = data.creator
-      let loggedInUser = req.user
+      let creator = data.userId
+      let loggedInUser = req.user.userId
 
       if(creator == loggedInUser) {
         Review.update(req.body, {
@@ -89,8 +89,8 @@ exports.delete = (req, res) => {
 
   Review.findByPk(reviewId)
     .then(data => {
-      let creator = data.creator;
-      let loggedInUser = req.user;
+      let creator = data.userId;
+      let loggedInUser = req.user.userId;
 
       if(creator == loggedInUser) {
         Review.destroy({
