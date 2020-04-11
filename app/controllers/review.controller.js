@@ -1,17 +1,33 @@
 const db = require("../models");
 const Review = db.reviews;
+const ReviewImages = db.reviewImages
 const Op = db.Sequelize.Op;
 
-exports.create = (req, res) => {
+function create (req, res) {
+  console.log(req.user)
   const review = {
     description: req.body.description,
     userId: req.user.userId,
     threadId: req.body.threadId
   }
-
   Review.create(review)
     .then(data => {
-      res.send(data);
+      if(req.files) {
+        const files = req.files;
+        for(let file of files) {
+          const reviewImage = {
+            image: file.filename,
+            reviewId: data.id,
+            userId: req.user.userId
+          }
+          createReviewImages(reviewImage, (res) => {
+            console.log('Uploaded file:' +res)
+          })
+        }
+        res.send({ image: 'Image/Images uploaded.', data: data })
+      } else {
+        res.send(data);
+      }
     })
     .catch(err => {
       res.status(500).send({
@@ -20,6 +36,13 @@ exports.create = (req, res) => {
       })
     })  
 };
+
+function createReviewImages (reviewImage, callback) {
+  ReviewImages.create(reviewImage)
+  .then(reviewData => { 
+    callback(reviewData.image)
+  })
+}
 
 // find reviews by threadId
 // reviews of a thread
@@ -119,3 +142,4 @@ exports.delete = (req, res) => {
       }
     })
 };
+module.exports.create = create

@@ -1,5 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const serveStatic = require('serve-static');
+
 const cors = require("cors");
 
 require('./app/config/passport');
@@ -16,10 +18,13 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(serveStatic('public/images'));
+
 const db = require("./app/models");
 db.sequelize.sync();
 
 const PORT = process.env.PORT || 8080;
+
 
 if(process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {

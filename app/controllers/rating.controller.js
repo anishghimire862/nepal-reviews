@@ -1,6 +1,8 @@
 const db = require("../models");
 const Rating = db.ratings;
 const Review = db.reviews;
+const ReviewImages = db.reviewImages;
+const ThreadImages = db.threadImages;
 const Thread = db.threads;
 const User = db.users;
 
@@ -64,11 +66,30 @@ exports.create = (req, res) => {
 // ratings of a thread
 exports.findAll = (req, res) => {
   let threadId = req.params.threadId;
-  Thread.findAll({where: {id: threadId},
-    include: [{
-      nested: true,
-      all: true
-    }],
+  Thread.findAll({where: { id: threadId},
+    include: [
+      { model: ThreadImages },
+      { 
+        model: Review,
+        include: [
+          {
+            model: ReviewImages
+          },
+          {
+            model: User,
+            as: 'users',
+            include: [
+              {
+                model: Rating,
+                as: 'ratings',
+                required: false,
+                where: { threadId: threadId }
+              }
+            ]
+          },
+        ]
+      }
+    ],
   })
     .then(data => {
       res.send(data);
@@ -82,7 +103,7 @@ exports.findAll = (req, res) => {
 
 exports.findReviewsAndRatings = (req, res) => {
   Thread.findAll({  
-    where: { id: 1 },
+    where: { id: 8 },
     // include: [{
       // model: Review,
       // as: 'reviews',

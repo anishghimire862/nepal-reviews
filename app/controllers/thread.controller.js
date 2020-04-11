@@ -1,20 +1,36 @@
 const db = require("../models");
 const Thread = db.threads;
+const ThreadImages = db.threadImages
 const User = db.users;
 const Rating = db.ratings;
 const Op = db.Sequelize.Op;
 
-exports.create = (req, res) => {
+function create (req, res) {
+  console.log(req.user)
   const thread = {
     title: req.body.title,
     description: req.body.description,
     category: req.body.category,
-    userId: req.user.userId,
-    published: req.body.published
+    userId: req.user.userId
   }
   Thread.create(thread)
     .then(data => {
-      res.send(data);
+      if(req.files) {
+        const files = req.files;
+        for(let file of files) {
+          const threadImage = {
+            image: file.filename,
+            threadId: data.id,
+            userId: req.user.userId
+          }
+          createThreadImages(threadImage, (res) => {
+            console.log('Uploaded file:' +res)
+          })
+        }
+        res.send({ image: 'Image/Images uploaded.', data: data })
+      } else {
+        res.send(data);
+      }
     })
     .catch(err => {
       res.status(500).send({
@@ -24,12 +40,20 @@ exports.create = (req, res) => {
     })  
 };
 
+function createThreadImages (threadImage, callback) {
+  ThreadImages.create(threadImage)
+  .then(threadData => { 
+    callback(threadData.image)
+  })
+}
+
 exports.findAll = (req, res) => {
   Thread.findAll({
 		include: [{
 			model: User,
 			as: 'users'
-		},
+    },
+    { model: ThreadImages },
 		{model: Rating, as: 'ratings'}
 		],
 		order: [
@@ -52,7 +76,8 @@ exports.findOne = (req, res) => {
 		include: [{
 			model: User,
 			as: 'users'
-		},
+    },
+    { model: ThreadImages },
 		{ model: Rating, as: 'ratings' }
 		]
 	})
@@ -136,3 +161,5 @@ exports.delete = (req, res) => {
       }
     })
 };
+
+module.exports.create = create

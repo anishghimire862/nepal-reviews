@@ -1,11 +1,16 @@
 var express = require('express');
 var router = express();
+var multer = require('multer');
+
+var multerStorage = require('../../multer');
+var upload = multer({ storage: multerStorage.storage });
 
 var passport = require('../config/passport');
 
 var UserController = require('../controllers/user.controller.js');
 
 var ThreadController = require('../controllers/thread.controller.js');
+var ThreadImageController = require('../controllers/thread.images.controller');
 
 var ReviewController = require('../controllers/review.controller.js');
 
@@ -15,6 +20,7 @@ var RatingController = require('../controllers/rating.controller.js');
 
 router.post('/threads',
   passport.authenticate('jwt', {session: false}),
+  upload.array('image'),
   ThreadController.create
 )
 
@@ -36,9 +42,17 @@ router.delete('/threads/:threadId',
   ThreadController.delete
 );
 
+// thread-images routes
+
+router.delete('/thread-image/:imageId',
+  passport.authenticate('jwt', {session: false}),
+  ThreadImageController.delete
+);
+
 // reviews route
 router.post('/reviews',
   passport.authenticate('jwt', {session: false}),
+  upload.array('image'),
   ReviewController.create
 );
 
