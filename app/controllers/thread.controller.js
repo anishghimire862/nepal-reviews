@@ -97,8 +97,22 @@ exports.update = (req, res) => {
     .then(data => {
       let creator = data.userId
       let loggedInUser = req.user.userId
-    
-      if(creator == loggedInUser) {
+
+			if(req.files) {
+		    const files = req.files;
+		    for(let file of files) {
+    	    const threadImage = {
+            image: file.filename,
+            threadId: data.id,
+            userId: req.user.userId
+          }
+          createThreadImages(threadImage, (res) => {
+            console.log('Updated file:' +res)
+          })
+        }
+			}
+
+      if(creator == loggedInUser) {			
         Thread.update(req.body, {
           where: { id: threadId }
         })
