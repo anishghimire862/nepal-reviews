@@ -34,6 +34,7 @@ router.get('/threads/:threadId',
 
 router.patch('/threads/:threadId',
   passport.authenticate('jwt', {session: false}),
+  upload.array('image'),
   ThreadController.update
 );
 
