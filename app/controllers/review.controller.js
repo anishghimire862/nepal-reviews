@@ -80,6 +80,21 @@ exports.update = (req, res) => {
       let loggedInUser = req.user.userId
 
       if(creator == loggedInUser) {
+
+				if(req.files) {
+					const files = req.files;
+					for(let file of files) {
+						const reviewImage = {
+							image: file.filename,
+            	reviewId: data.id,
+            	userId: req.user.userId
+						}
+	          createReviewImages(reviewImage, (res) => {
+	            console.log('Uploaded file:' +res)
+  	        })
+					}
+				}
+
         Review.update(req.body, {
           where: { id: reviewId }
         })
