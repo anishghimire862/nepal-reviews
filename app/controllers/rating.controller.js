@@ -89,7 +89,7 @@ exports.findAll = (req, res) => {
           },
         ]
       }
-    ],
+    ]
   })
     .then(data => {
       res.send(data);
