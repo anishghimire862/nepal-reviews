@@ -13,6 +13,7 @@ var ThreadController = require('../controllers/thread.controller.js');
 var ThreadImageController = require('../controllers/thread.images.controller');
 
 var ReviewController = require('../controllers/review.controller.js');
+var ReviewImageController = require('../controllers/review.images.controller');
 
 var RatingController = require('../controllers/rating.controller.js');
 
@@ -50,6 +51,14 @@ router.delete('/thread-image/:imageId',
   ThreadImageController.delete
 );
 
+// review-images routes
+
+router.delete('/review-image/:imageId', 
+	passport.authenticate('jwt', {session: false}),
+	ReviewImageController.delete
+);
+
+
 // reviews route
 router.post('/reviews',
   passport.authenticate('jwt', {session: false}),
@@ -67,6 +76,7 @@ router.get('/reviews/:threadId',
 
 router.patch('/reviews/:reviewId',
   passport.authenticate('jwt', {session: false}),
+  upload.array('image'),
   ReviewController.update
 );
 
