@@ -6,7 +6,6 @@ const Rating = db.ratings;
 const Op = db.Sequelize.Op;
 
 function create (req, res) {
-  console.log(req.user)
   const thread = {
     title: req.body.title,
     description: req.body.description,
