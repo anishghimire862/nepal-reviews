@@ -12,7 +12,7 @@ const saltRounds = 10;
 
 exports.new = function (req, res) {
   console.log(req.body)
-  User.findOne({ user_email: req.body.user_email }, function(err, data) {
+  User.findOne({ email: req.body.email }, function(err, data) {
     if(err) {
       res.json({
         message: err
@@ -25,9 +25,9 @@ exports.new = function (req, res) {
       } else {
         let user = new User();
         user.username = req.body.username;
-        user.user_email = req.body.user_email;
-        user.password = req.body.password;
+        user.email = req.body.email;
         bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+          user.password = hash;
           user.save(function (err, data) {
             if(err) {
               res.json({
@@ -44,34 +44,6 @@ exports.new = function (req, res) {
       }
     }
   })
-
-  // User.findOne({ where: {email: req.body.email} })
-  //   .then(user => {
-  //     if(user) {
-  //       res.status(409).send({
-  //         message: 'Email already exists'
-  //       });
-  //     } else {
-  //         bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-  //           const user = {
-  //             email: req.body.email,
-  //             password: hash,
-  //             username: req.body.username,
-  //             name: req.body.name
-  //           }
-  //           User.create(user)
-  //           .then(data => {
-  //             res.send(data);
-  //           })
-  //           .catch(err => {
-  //             res.status(500).send({
-  //               message:
-  //                 err.message || "Some error occured while creating the Thread."
-  //             })
-  //           })
-  //         })  
-  //     }
-  //   })
 };
 
 exports.login = (req, res) => {
@@ -97,7 +69,7 @@ exports.user = (req, res) => {
     } catch (e) {
     	return res.status(401).send('unauthorized');
     }
-   	User.findOne({where: {email: decoded.email} })
+   	User.findOne({ email: decoded.email })
 			.then(user => {
 				if(user) {
 			    res.status(200).json({ loggedIn: true, data: user })
