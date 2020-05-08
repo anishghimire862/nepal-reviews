@@ -2,42 +2,76 @@ var passport = require('../config/passport');
 var jwtConfig = require('../config/jwtConfig');
 var jwt = require('jsonwebtoken');
 
-const db = require("../models");
-const User = db.users;
-const Op = db.Sequelize.Op;
+// const db = require("../models");
+// const User = db.users;
+const User = require('../models/user.md.model');
+// const Op = db.Sequelize.Op;
 
 var bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-exports.create = (req, res) => {
-
-  User.findOne({ where: {email: req.body.email} })
-    .then(user => {
-      if(user) {
-        res.status(409).send({
+exports.new = function (req, res) {
+  console.log(req.body)
+  User.findOne({ user_email: req.body.user_email }, function(err, data) {
+    if(err) {
+      res.json({
+        message: err
+      });
+    } else {
+      if(data) {
+        res.json({
           message: 'Email already exists'
         });
       } else {
-          bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-            const user = {
-              email: req.body.email,
-              password: hash,
-              username: req.body.username,
-              name: req.body.name
-            }
-            User.create(user)
-            .then(data => {
-              res.send(data);
-            })
-            .catch(err => {
-              res.status(500).send({
-                message:
-                  err.message || "Some error occured while creating the Thread."
+        let user = new User();
+        user.username = req.body.username;
+        user.user_email = req.body.user_email;
+        user.password = req.body.password;
+        bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+          user.save(function (err, data) {
+            if(err) {
+              res.json({
+                message: err
+              });
+            } else {
+              res.json({
+                message: 'User created successfully.',
+                data: data
               })
-            })
-          })  
+            }
+          })
+        })
       }
-    })
+    }
+  })
+
+  // User.findOne({ where: {email: req.body.email} })
+  //   .then(user => {
+  //     if(user) {
+  //       res.status(409).send({
+  //         message: 'Email already exists'
+  //       });
+  //     } else {
+  //         bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+  //           const user = {
+  //             email: req.body.email,
+  //             password: hash,
+  //             username: req.body.username,
+  //             name: req.body.name
+  //           }
+  //           User.create(user)
+  //           .then(data => {
+  //             res.send(data);
+  //           })
+  //           .catch(err => {
+  //             res.status(500).send({
+  //               message:
+  //                 err.message || "Some error occured while creating the Thread."
+  //             })
+  //           })
+  //         })  
+  //     }
+  //   })
 };
 
 exports.login = (req, res) => {

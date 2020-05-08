@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const serveStatic = require('serve-static');
+const mongoose = require('mongoose');
 
 const cors = require("cors");
 
@@ -22,6 +23,15 @@ app.use(serveStatic('public/images'));
 
 const db = require("./app/models");
 db.sequelize.sync();
+
+mongoose.connect('mongodb://localhost/nepalreviews', { useNewUrlParser: true});
+
+const mongoDb = mongoose.connection;
+
+if(!mongoDb)
+  console.log("Error connecting to mongo db")
+else
+  console.log("Db connected successfully -- MongoDB")
 
 const PORT = process.env.PORT || 8080;
 

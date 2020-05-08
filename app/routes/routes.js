@@ -107,7 +107,7 @@ router.get('/current-user-star/:threadId/:userId',
 // user login/registration routes
 
 router.post('/user',
-  UserController.create
+  UserController.new
 )
 
 router.post('/api/auth/login',
