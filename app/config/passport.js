@@ -1,5 +1,6 @@
-const db = require("../models");
-const User = db.users;
+// const db = require("../models");
+// const User = db.users;
+const User = require('../models/user.md.model');
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -7,7 +8,7 @@ var passportJWT = require("passport-jwt");
 var JWTStrategy   = passportJWT.Strategy;
 var ExtractJWT = passportJWT.ExtractJwt;
 var JwtConfig = require('./jwtConfig.js');
-const Op = db.Sequelize.Op;
+// const Op = db.Sequelize.Op;
 
 var bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -19,7 +20,7 @@ passport.use(new LocalStrategy(
   },
   function(email, password, done) {
 
-    User.findOne({ where: {email: email} })
+    User.findOne({ email: email })
       .then(user => {
         if(user) {
           bcrypt.compare(password, user.password, function(err, result) {
