@@ -1,63 +1,75 @@
-const db = require("../models");
-const Review = db.reviews;
-const ReviewImages = db.reviewImages
-const Op = db.Sequelize.Op;
+const Review = require('../models/review.md.model');
+const ObjectId = require('mongodb').ObjectID;
 
 function create (req, res) {
-  console.log(req.user)
-  const review = {
-    description: req.body.description,
-    userId: req.user.userId,
-    threadId: req.body.threadId
-  }
-  Review.create(review)
-    .then(data => {
-      if(req.files) {
-        const files = req.files;
-        for(let file of files) {
-          const reviewImage = {
-            image: file.filename,
-            reviewId: data.id,
-            userId: req.user.userId
-          }
-          createReviewImages(reviewImage, (res) => {
-            console.log('Uploaded file:' +res)
-          })
-        }
-        res.send({ image: 'Image/Images uploaded.', data: data })
+	Review.findOne({ thread_id: req.body.threadId }, function (err, data) {
+    if(err) {
+      res.json({
+        message: err
+      });
+    } else {
+      if(data) {
+        res.json({
+          message: "You have already reviewed this Thread."
+        })
       } else {
-        res.send(data);
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occured while creating the Thread."
-      })
-    })  
-};
+        let review = new Review();
+        review.images = [];
+        review.description = req.body.description
+        review.rating = req.body.rating
+        review.user_id = req.user.userId
+        review.thread_id = req.body.threadId
+        
+        if(req.files) {
+          const files = req.files;
+          for(let file of files) {
+            review.images.push(file.filename);
+          }
+        }
 
-function createReviewImages (reviewImage, callback) {
-  ReviewImages.create(reviewImage)
-  .then(reviewData => { 
-    callback(reviewData.image)
+        review.save(function(err, data) {
+          if(err) {
+            res.json({
+              message: err
+            });
+          } else {
+            res.json({
+              message: 'Review created successfully.',
+              data: data
+            })
+          }
+        })
+      }
+    }
   })
 }
 
-// find reviews by threadId
-// reviews of a thread
 exports.findAll = (req, res) => {
   let threadId = req.params.threadId;
-  Review.findAll({where: {threadId: threadId}})
-    .then(data => {
+  Review.aggregate([
+    {
+      $match: {
+        thread_id: ObjectId(threadId)
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+  ]).exec(function (err, data) {
+    if(data) {
       res.send(data);
-    })
-    .catch(err => {
+    } else {
       res.status(500).send({
-        message: err.message || "Some error occured while retriving threads."
-      });
-    });
-};
+        message: "Error retriving a thread."
+      })
+    }
+  })
+}
 
 exports.findOne = (req, res) => {
 	let reviewId = req.params.reviewId;
@@ -74,87 +86,72 @@ exports.findOne = (req, res) => {
 
 exports.update = (req, res) => {
   let reviewId = req.params.reviewId;
-  Review.findByPk(reviewId)
-    .then(data => {
-      let creator = data.userId
+
+  Review.findOne({_id: reviewId }, function(err, data) {
+    if(err) {
+      res.json({
+        message: err
+      })
+    } else {
+      let creator = data.user_id
       let loggedInUser = req.user.userId
-
+      let images = []
       if(creator == loggedInUser) {
-
-				if(req.files) {
-					const files = req.files;
-					for(let file of files) {
-						const reviewImage = {
-							image: file.filename,
-            	reviewId: data.id,
-            	userId: req.user.userId
-						}
-	          createReviewImages(reviewImage, (res) => {
-	            console.log('Uploaded file:' +res)
-  	        })
-					}
-				}
-
-        Review.update(req.body, {
-          where: { id: reviewId }
-        })
-          .then(num => {
-            if (num == 1) {
-              res.send({
-                message: "Review was updated successfully."
-              });
-            } else {
-              res.send({
-                message: `Cannot update Review. Maybe Review was not found or req.body is empty!`
-              });
-            }
+        if(req.files) {
+          const files = req.files;
+          for(let file of files) {
+            images.push(file.filename);
+          }
+        }
+        Review.findById(reviewId, function(err, review) {
+          if(err) 
+            res.send(err)
+          let updatedImages = images.concat(review.images)
+          if(images) updatedImages.concat(images);
+          review.description = req.body.description || review.description
+          review.rating = req.body.rating || review.rating
+          review.images = updatedImages
+          console.log(review)
+          review.save(function(err, data) {
+            if(err)
+              res.send(err)
+            res.send(data)
           })
-          .catch(err => {
-            res.status(500).send({
-              message: "Error updating Review"
-            });
-          });
+        })
       } else {
-        res.status(403).send({
+        res.json({
           message: "Forbidden!!"
         })
-      } 
-    })
+      }
+    }
+  })
 };
 
 exports.delete = (req, res) => {
   const reviewId = req.params.reviewId;
+  console.log(reviewId)
 
-  Review.findByPk(reviewId)
-    .then(data => {
-      let creator = data.userId;
-      let loggedInUser = req.user.userId;
-
-      if(creator == loggedInUser) {
-        Review.destroy({
-          where: { id: reviewId }
+  Review.findById(reviewId, function(err, review) {
+    if(err) 
+      res.send(err)
+    let creator = review.user_id
+    let loggedInUser = req.user.userId
+    if(creator == loggedInUser) {
+      Review.remove({
+        _id: reviewId
+      }, function(err, data) {
+        if(err)
+          res.send(err)
+        res.json({
+          status: "success",
+          message: "Deleted successfully"
         })
-          .then(num => {
-            if (num == 1) {
-              res.send({
-                message: "Review was deleted successfully!"
-              });
-            } else {
-              res.send({
-                message: `Cannot delete Review. Maybe Review was not found!`
-              });
-            }
-          })
-          .catch(err => {
-            res.status(500).send({
-              message: "Could not delete Review"
-            });
-          });
-      } else {
-        res.status(403).send({
-          message: "Forbidden!!"
-        })
-      }
-    })
+      })
+    } else {
+      res.json({
+        message: "Forbidden!!"
+      })
+    }
+  })
 };
 module.exports.create = create

@@ -15,9 +15,9 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(serveStatic('public/images'));
 
@@ -33,7 +33,7 @@ if(!mongoDb)
 else
   console.log("Db connected successfully -- MongoDB")
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8082;
 
 
 if(process.env.NODE_ENV !== 'test') {
