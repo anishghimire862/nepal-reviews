@@ -21,8 +21,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(serveStatic('public/images'));
 
-const db = require("./app/models");
-db.sequelize.sync();
+// const db = require("./app/models");
+// db.sequelize.sync();
 
 mongoose.connect('mongodb://localhost/nepalreviews', { useNewUrlParser: true});
 

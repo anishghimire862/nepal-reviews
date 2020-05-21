@@ -10,12 +10,12 @@ var passport = require('../config/passport');
 var UserController = require('../controllers/user.controller.js');
 
 var ThreadController = require('../controllers/thread.controller.js');
-var ThreadImageController = require('../controllers/thread.images.controller');
+// var ThreadImageController = require('../controllers/thread.images.controller');
 
 var ReviewController = require('../controllers/review.controller.js');
-var ReviewImageController = require('../controllers/review.images.controller');
+// var ReviewImageController = require('../controllers/review.images.controller');
 
-var RatingController = require('../controllers/rating.controller.js');
+// var RatingController = require('../controllers/rating.controller.js');
 
 // threads route
 
@@ -44,21 +44,6 @@ router.delete('/threads/:threadId',
   ThreadController.delete
 );
 
-// thread-images routes
-
-router.delete('/thread-image/:imageId',
-  passport.authenticate('jwt', {session: false}),
-  ThreadImageController.delete
-);
-
-// review-images routes
-
-router.delete('/review-image/:imageId', 
-	passport.authenticate('jwt', {session: false}),
-	ReviewImageController.delete
-);
-
-
 // reviews route
 router.post('/reviews',
   passport.authenticate('jwt', {session: false}),
@@ -85,24 +70,9 @@ router.delete('/reviews/:reviewId',
   ReviewController.delete
 );
 
-//threads rating routes
-
-router.post('/ratings',
-  passport.authenticate('jwt', {session: false}),
-  RatingController.create
-);
-
-router.get('/ratings/:threadId',
-  RatingController.findAll
-);
-
-router.get('/reviews-ratings',
-  RatingController.findReviewsAndRatings
-)
-
-router.get('/current-user-star/:threadId/:userId',
-	RatingController.findStarOfCurrentUser
-)
+// router.get('/current-user-star/:threadId/:userId',
+// 	RatingController.findStarOfCurrentUser
+// )
 
 // user login/registration routes
 
