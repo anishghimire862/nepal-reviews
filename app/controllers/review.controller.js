@@ -8,7 +8,6 @@ function create (req, res) {
         message: err
       });
     } else {
-      console.log(data)
       if(data) {
         res.json({
           message: "You have already reviewed this Thread."
@@ -60,17 +59,7 @@ exports.findAll = (req, res) => {
         foreignField: "_id",
         as: "user"
       }
-    },
-    { $unwind: '$user' },
-    {
-      $lookup: {
-        from: "threads",
-        localField: "thread_id",
-        foreignField: "_id",
-        as: "thread"
-      }
-    },
-    { $unwind: '$thread' }
+    }
   ]).exec(function (err, data) {
     if(data) {
       res.send(data);

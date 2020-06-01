@@ -1,7 +1,7 @@
 const superset = require('supertest');
 const app = require('../../server');
 
-const db = require("../models");
+// const db = require("../models");
 
 describe("Tests for /reviews endpoint", () => {
   let token = null;

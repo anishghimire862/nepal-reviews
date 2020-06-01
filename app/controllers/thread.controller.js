@@ -1,13 +1,7 @@
-// const db = require("../models");
-// const Thread = db.threads;
-// const ThreadImages = db.threadImages
-// const User = db.users;
 const Thread = require('../models/thread.md.model');
 const Review = require('../models/review.md.model');
 const User = require('../models/user.md.model');
 const ObjectId = require('mongodb').ObjectID;
-// const Rating = db.ratings;
-// const Op = db.Sequelize.Op;
 
 function create (req, res) {
   let thread = new Thread();
@@ -29,6 +23,7 @@ function create (req, res) {
         message: err
       });
     } else {
+      console.log(data)
       res.json({
         message: 'Thread created successfully.',
         data: data
@@ -38,6 +33,7 @@ function create (req, res) {
 }
 
 exports.findAll = (req, res) => {
+  console.log('Hello World')
   Thread.aggregate([
     {
       $lookup: {
@@ -47,7 +43,7 @@ exports.findAll = (req, res) => {
         as: "user"
       }
     },
-    { $unwind: '$user' },
+    { $unwind: {path: '$user', "preserveNullAndEmptyArrays": true }},
     {
       $lookup: {
         from: "reviews",
@@ -56,7 +52,7 @@ exports.findAll = (req, res) => {
         as: "reviews"
       }
     },
-    {$unwind: '$reviews'},
+    { $unwind: {path: '$reviews', "preserveNullAndEmptyArrays": true }},
     {
       $group: {
         _id: '$_id',
@@ -73,10 +69,14 @@ exports.findAll = (req, res) => {
       }
     }
   ]).exec(function(err, data) {
-    if(data) 
+    if(data) {
+      console.log('data', data)
       res.send(data)
-    else 
+    }
+    else {
+      console.log('error', err)
       res.send(err)
+    }
   });
 };
 
@@ -131,8 +131,6 @@ exports.findOne = (req, res) => {
     }
   })
 };
-
-
 
 exports.update = (req, res) => {
   let threadId = req.params.threadId;
@@ -198,6 +196,23 @@ exports.delete = (req, res) => {
     } else {
       res.json({
         message: "Forbidden!!"
+      })
+    }
+  })
+};
+
+exports.findStarOfCurrentUser = (req, res) => {
+  const threadId = req.params.threadId;
+  const userId = req.params.userId;
+
+	Review.findOne({ $and: [{thread_id: threadId}, {user_id: userId}] }, 'rating', function (err, data) {
+    if(err) {
+      res.json({
+        message: err
+      });
+    } else {
+      res.json({
+        rating: data
       })
     }
   })

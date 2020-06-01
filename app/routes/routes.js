@@ -8,14 +8,8 @@ var upload = multer({ storage: multerStorage.storage });
 var passport = require('../config/passport');
 
 var UserController = require('../controllers/user.controller.js');
-
 var ThreadController = require('../controllers/thread.controller.js');
-// var ThreadImageController = require('../controllers/thread.images.controller');
-
 var ReviewController = require('../controllers/review.controller.js');
-// var ReviewImageController = require('../controllers/review.images.controller');
-
-// var RatingController = require('../controllers/rating.controller.js');
 
 // threads route
 
@@ -70,9 +64,9 @@ router.delete('/reviews/:reviewId',
   ReviewController.delete
 );
 
-// router.get('/current-user-star/:threadId/:userId',
-// 	RatingController.findStarOfCurrentUser
-// )
+router.get('/current-user-star/:threadId/:userId',
+	ThreadController.findStarOfCurrentUser
+)
 
 // user login/registration routes
 

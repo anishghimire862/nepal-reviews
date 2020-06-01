@@ -1,8 +1,9 @@
 const superset = require('supertest');
 const app = require('../../server');
 
-const db = require("../models");
-const User = db.users;
+// const db = require("../models");
+// const User = db.users;
+const User = require('../models/user.md.model');
 
 describe("Tests for /user endpoint", () => {
 

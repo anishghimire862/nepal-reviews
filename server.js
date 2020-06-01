@@ -10,7 +10,7 @@ require('./app/config/passport');
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:3000"
+  origin: "*"
 };
 
 app.use(cors(corsOptions));
@@ -21,10 +21,8 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(serveStatic('public/images'));
 
-// const db = require("./app/models");
-// db.sequelize.sync();
-
-mongoose.connect('mongodb://localhost/nepalreviews', { useNewUrlParser: true});
+// mongoose.connect('mongodb://localhost/nepalreviews', { useNewUrlParser: true});
+mongoose.connect('mongodb://root/password@mongo:27017/nepalreviews', { useNewUrlParser: true});
 
 const mongoDb = mongoose.connection;
 
@@ -33,8 +31,7 @@ if(!mongoDb)
 else
   console.log("Db connected successfully -- MongoDB")
 
-const PORT = process.env.PORT || 8082;
-
+const PORT = process.env.PORT || 8080;
 
 if(process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
