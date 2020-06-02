@@ -5,6 +5,4 @@ npm-debug.log
 .DS_Store
 .history
 public
-Dockerfile
-docker-compose.yml
 data

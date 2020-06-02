@@ -21,8 +21,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(serveStatic('public/images'));
 
-// mongoose.connect('mongodb://localhost/nepalreviews', { useNewUrlParser: true});
-mongoose.connect('mongodb://root/password@mongo:27017/nepalreviews', { useNewUrlParser: true});
+mongoose.connect('mongodb://root:password@krrish.com.np:35619/nepalreviews', { useUnifiedTopology: true });
 
 const mongoDb = mongoose.connection;
 
