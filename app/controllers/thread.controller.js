@@ -23,7 +23,6 @@ function create (req, res) {
         message: err
       });
     } else {
-      console.log(data)
       res.json({
         message: 'Thread created successfully.',
         data: data
@@ -33,7 +32,6 @@ function create (req, res) {
 }
 
 exports.findAll = (req, res) => {
-  console.log('Hello World')
   Thread.aggregate([
     {
       $lookup: {
@@ -70,11 +68,9 @@ exports.findAll = (req, res) => {
     }
   ]).exec(function(err, data) {
     if(data) {
-      console.log('data', data)
       res.send(data)
     }
     else {
-      console.log('error', err)
       res.send(err)
     }
   });
