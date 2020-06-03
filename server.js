@@ -2,8 +2,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const serveStatic = require('serve-static');
 const mongoose = require('mongoose');
-
 const cors = require("cors");
+
+const configFile = process.argv[2];
+const config = require(`./app/config/${configFile}`);
 
 require('./app/config/passport');
 
@@ -21,7 +23,9 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(serveStatic('public/images'));
 
-mongoose.connect('mongodb://root:password@krrish.com.np:35619/nepalreviews', { useUnifiedTopology: true });
+mongoose.connect(`mongodb://${config.USERNAME}:${config.PASSWORD}@${config.HOST}:${config.PORT}/${config.DATABASE}`, { 
+  useUnifiedTopology: true 
+});
 
 const mongoDb = mongoose.connection;
 
