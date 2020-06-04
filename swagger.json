@@ -18,6 +18,10 @@
     {
       "name": "Threads",
       "description": "API for maintaining threads"
+    },
+    {
+      "name": "Reviews",
+      "description": "API for maintaining reviews"
     }
   ],
   "schemes": [
@@ -272,6 +276,148 @@
           }
         }
       }
+    },
+    "/reviews": {
+      "post": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "Create new review",
+        "parameters": [
+          {
+            "name": "review",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Review"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "New review is created",
+            "schema": {
+              "$ref": "#/definitions/Thread"
+            }
+          }
+        }
+      }
+    },
+    "/review/{reviewId}": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "Retrive review by review ID",
+        "parameters": [
+          {
+            "name": "reviewId",
+            "in": "path",
+            "description": "ID of review to return",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "Update review information",
+        "parameters": [
+          {
+            "name": "review",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UpdateReview"
+            }
+          },
+          {
+            "name": "reviewId",
+            "in": "path",
+            "description": "ID of review to update",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "Delete review information",
+        "parameters": [
+          {
+            "name": "reviewId",
+            "in": "path",
+            "description": "ID of review to delete",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      }
+    },
+    "/reviews/{threadId}": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "description": "Retrive all reviews of a thread",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "ID of thread to return reviews",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -327,6 +473,38 @@
         },
         "category": {
           "type": "string"
+        }
+      }
+    },
+    "Review": {
+      "required": [
+        "description",
+        "rating",
+        "threadId"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
+        },
+        "threadId": {
+          "type": "string"
+        }
+      }
+    },
+    "UpdateReview": {
+      "required": [
+        "description",
+        "rating"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
         }
       }
     }
