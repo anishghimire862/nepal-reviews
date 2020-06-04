@@ -83,15 +83,11 @@ exports.findAll = (req, res) => {
 
 exports.findOne = (req, res) => {
 	let reviewId = req.params.reviewId;
-	Review.findByPk(reviewId)
-		.then(data => {
-			res.send(data);
-		})
-		.catch(err => {
-			res.status(500).send({
-				message: err.message || "Some error occured while retriving threads."
-			});
-		});
+	Review.findOne({_id: reviewId}, function(err, data) {
+    if(err)
+      res.json(err)
+    res.json(data)
+  })
 };
 
 exports.update = (req, res) => {
