@@ -10,6 +10,9 @@
     }
   },
   "host": "localhost:8080",
+  "basePath": [
+    "/api/v1"
+  ],
   "tags": [
     {
       "name": "Users",
@@ -35,7 +38,7 @@
   ],
 
   "paths": {
-    "/user": {
+    "/users": {
       "post": {
         "tags": [
           "Users"
@@ -63,7 +66,7 @@
         }
       }
     },
-    "/api/auth/login": {
+    "/login": {
       "post": {
         "tags": [
           "Users"
@@ -310,7 +313,7 @@
         }
       }
     },
-    "/review/{reviewId}": {
+    "/reviews/{reviewId}": {
       "get": {
         "tags": [
           "Reviews"
@@ -395,7 +398,7 @@
         }
       }
     },
-    "/reviews/{threadId}": {
+    "/reviews/threads/{threadId}": {
       "get": {
         "tags": [
           "Reviews"
