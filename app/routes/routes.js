@@ -45,36 +45,36 @@ router.post('/reviews',
   ReviewController.create
 );
 
-router.get('/review/:reviewId', 
+router.get('/reviews/:reviewId', 
 	ReviewController.findOne
 );
 
-router.get('/reviews/:threadId',
+router.get('/reviews/threads/:threadId',
   ReviewController.findAll
 );
 
-router.patch('/review/:reviewId',
+router.patch('/reviews/:reviewId',
   passport.authenticate('jwt', {session: false}),
   upload.array('image'),
   ReviewController.update
 );
 
-router.delete('/review/:reviewId',
+router.delete('/reviews/:reviewId',
   passport.authenticate('jwt', {session: false}),
   ReviewController.delete
 );
 
-router.get('/threads/stars/:threadId/:userId',
+router.get('/user/stars/:threadId/:userId',
 	ThreadController.findStarOfCurrentUser
 )
 
 // user login/registration routes
 
-router.post('/user',
+router.post('/users',
   UserController.new
 )
 
-router.post('/api/auth/login',
+router.post('/login',
   UserController.login
 )
 
