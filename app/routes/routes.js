@@ -53,13 +53,13 @@ router.get('/reviews/:threadId',
   ReviewController.findAll
 );
 
-router.patch('/reviews/:reviewId',
+router.patch('/review/:reviewId',
   passport.authenticate('jwt', {session: false}),
   upload.array('image'),
   ReviewController.update
 );
 
-router.delete('/reviews/:reviewId',
+router.delete('/review/:reviewId',
   passport.authenticate('jwt', {session: false}),
   ReviewController.delete
 );
