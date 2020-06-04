@@ -247,7 +247,7 @@
         }
       }
     },
-    "/current-user-star/{threadId}/{userId}": {
+    "/threads/stars/{threadId}/{userId}": {
       "get": {
         "tags": [
           "Threads"

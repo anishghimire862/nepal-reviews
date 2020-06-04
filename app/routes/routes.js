@@ -64,7 +64,7 @@ router.delete('/review/:reviewId',
   ReviewController.delete
 );
 
-router.get('/current-user-star/:threadId/:userId',
+router.get('/threads/stars/:threadId/:userId',
 	ThreadController.findStarOfCurrentUser
 )
 
