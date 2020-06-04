@@ -1,0 +1,334 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Nepal Reviews API",
+    "description": "API for Nepal Reviews",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "localhost:8080",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "API for users in the system"
+    },
+    {
+      "name": "Threads",
+      "description": "API for maintaining threads"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+
+  "paths": {
+    "/user": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Create new user",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "New user is created",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "User log in",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UserLogin"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully logged in"
+          }
+        }
+      }
+    },
+    "/api/auth/user": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Current user status",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      }
+    },
+
+    "/threads": {
+      "post": {
+        "tags": [
+          "Threads"
+        ],
+        "description": "Create new thread",
+        "parameters": [
+          {
+            "name": "thread",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Thread"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "New thread is created",
+            "schema": {
+              "$ref": "#/definitions/Thread"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Threads"
+        ],
+        "description": "Retrives all existing threads",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Retrive all threads",
+            "schema": {
+              "$ref": "#/definitions/Thread"
+            }
+          }
+        }
+      }
+    },
+    "/threads/{threadId}": {
+      "get": {
+        "tags": [
+          "Threads"
+        ],
+        "description": "Retrive thread by thread ID",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "ID of thread to return",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Threads"
+        ],
+        "description": "Update thread information",
+        "parameters": [
+          {
+            "name": "thread",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Thread"
+            }
+          },
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "ID of thread to update",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Threads"
+        ],
+        "description": "Delete thread information",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "ID of thread to delete",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      }
+    },
+    "/current-user-star/{threadId}/{userId}": {
+      "get": {
+        "tags": [
+          "Threads"
+        ],
+        "description": "Retrive rating provided by a user in particular thread",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "ID of the thread",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "required": [
+        "email",
+        "username",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "username": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "password": {
+          "type": "string",
+          "uniqueItems": true
+        }
+      }
+    },
+    "UserLogin": {
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "uniqueItems": true
+        },
+        "password": {
+          "type": "string",
+          "uniqueItems": true
+        }
+      }
+    },
+    "Thread": {
+      "required": [
+        "title",
+        "description",
+        "category"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
