@@ -59,13 +59,23 @@ exports.findAll = (req, res) => {
         foreignField: "_id",
         as: "user"
       }
+    },
+    {
+      $group: {
+        _id: '$_id',
+        description: {$first: '$description'},
+        images: {$first: '$images'},
+        rating: {$first: '$rating'},
+        user_id: {$first: '$user_id'},
+        user: {$first: '$user'}
+      }
     }
   ]).exec(function (err, data) {
     if(data) {
       res.send(data);
     } else {
       res.status(500).send({
-        message: "Error retriving a thread."
+        message: "Error retriving a reviews."
       })
     }
   })
