@@ -60,10 +60,11 @@ exports.findAll = (req, res) => {
         images: {$first: '$images'},
         user_id: {$first: '$user_id'},
         user: {$first: '$user'},
-        reviews: {$push: {
-          review: '$reviews',
-          user: '$user'
-        }}
+        average_rating: { $avg : '$reviews.rating' },
+        // reviews: {$push: {
+        //   review: '$reviews',
+        //   user: '$user'
+        // }}
       }
     }
   ]).exec(function(err, data) {
@@ -111,10 +112,11 @@ exports.findOne = (req, res) => {
         images: {$first: '$images'},
         user_id: {$first: '$user_id'},
         user: {$first: '$user'},
-        reviews: {$push: {
-          review: '$reviews',
-          user: '$user'
-        }}
+        average_rating: { $avg : '$reviews.rating' },
+        // reviews: {$push: {
+        //   review: '$reviews',
+        //   user: '$user'
+        // }}
       }
     }
   ]).exec(function (err, data) {
