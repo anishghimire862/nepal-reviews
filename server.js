@@ -46,7 +46,7 @@ var routes = require("./app/routes/routes.js");
 var swaggerUi = require('swagger-ui-express'),
   swaggerDocument = require('./swagger.json');
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use(routes);
+app.use('/api/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/v1', routes);
 
 module.exports = app;

@@ -60,6 +60,7 @@ exports.findAll = (req, res) => {
         as: "user"
       }
     },
+    { $unwind: {path: '$user', "preserveNullAndEmptyArrays": true }},
     {
       $group: {
         _id: '$_id',
