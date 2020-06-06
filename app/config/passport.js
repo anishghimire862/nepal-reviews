@@ -1,16 +1,17 @@
-// const db = require("../models");
-// const User = db.users;
 const User = require('../models/user.md.model');
 
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var passportJWT = require("passport-jwt");
-var JWTStrategy   = passportJWT.Strategy;
-var ExtractJWT = passportJWT.ExtractJwt;
-var JwtConfig = require('./jwtConfig.js');
-// const Op = db.Sequelize.Op;
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const passportJWT = require("passport-jwt");
+const JWTStrategy   = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
+const JwtConfig = require('./jwtConfig.js');
 
-var bcrypt = require('bcrypt');
+const errorResponse = require('../response/error.response');
+const successResponse = require('../response/success.response');
+
+
+const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 passport.use(new LocalStrategy(
@@ -20,18 +21,25 @@ passport.use(new LocalStrategy(
   },
   function(email, password, done) {
 
-    User.findOne({ email: email })
+    User.findOne({ $or: [{email: email}, {username: email}] })
       .then(user => {
         if(user) {
           bcrypt.compare(password, user.password, function(err, result) {
             if(result == true) {
-              return done(null, user, { message: 'Logged in successfully.' });
+              return done(null, user, { 
+                message: successResponse.SUCCESSFUL_LOGIN 
+              });
             } else {
-              return done(null, false, {message: 'Incorrect email or password.'});
+              return done(null, false, {
+                message: errorResponse.INVALID_LOGIN_DETAILS 
+              });
             }
           })
         } else {
-          return done(null, false, {message: 'Incorrect email or password.'});
+          return done(null, false, { 
+            violator: email.includes('@') ? 'emailAddress' : 'username',
+            message: errorResponse.INVALID_LOGIN_DETAILS 
+          });
         }
       })
       .catch(err => done(err))
@@ -47,8 +55,6 @@ passport.use(new JWTStrategy({
     return cb(null, jwtPayload)
   }
 ));
-
-
 
 passport.serializeUser(function(user, cb) {
   cb(null, user);

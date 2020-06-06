@@ -1,6 +1,9 @@
 const Review = require('../models/review.md.model');
 const ObjectId = require('mongodb').ObjectID;
 
+const errorResponse = require('../response/error.response');
+const successResponse = require('../response/success.response');
+
 function create (req, res) {
 	Review.findOne({ $and: [{thread_id: req.body.threadId}, {user_id: req.user.userId}] }, function (err, data) {
     if(err) {
@@ -10,7 +13,8 @@ function create (req, res) {
     } else {
       if(data) {
         res.json({
-          message: "You have already reviewed this Thread."
+          violator: "thread",
+          errorMessage: errorResponse.REVIEW_ALREADY_EXISTS
         })
       } else {
         let review = new Review();
@@ -34,7 +38,7 @@ function create (req, res) {
             });
           } else {
             res.json({
-              message: 'Review created successfully.',
+              message: successResponse.SUCCESSFUL_CREATION,
               data: data
             })
           }
@@ -70,13 +74,25 @@ exports.findAll = (req, res) => {
         user_id: {$first: '$user_id'},
         user: {$first: '$user'}
       }
+    },
+    {
+      "$project": {
+        "_id": 1,
+        "description": 1,
+        "images": 1,
+        "rating": 1,
+        "user_id": 1,
+        "user._id": 1,
+        "user.username": 1,
+        "user.email": 1
+      }
     }
   ]).exec(function (err, data) {
     if(data) {
       res.send(data);
     } else {
       res.status(500).send({
-        message: "Error retriving a reviews."
+        message: err
       })
     }
   })
@@ -121,12 +137,12 @@ exports.update = (req, res) => {
           review.save(function(err, data) {
             if(err)
               res.send(err)
-            res.send(data)
+            res.json({data: data, message: successResponse.SUCCESSFUL_UPDATE })
           })
         })
       } else {
         res.json({
-          message: "Forbidden!!"
+          errorMessage: errorResponse.UNAUTHORIZED
         })
       }
     }
@@ -148,13 +164,12 @@ exports.delete = (req, res) => {
         if(err)
           res.send(err)
         res.json({
-          status: "success",
-          message: "Deleted successfully"
+          message: successResponse.SUCCESSFUL_DELETION
         })
       })
     } else {
       res.json({
-        message: "Forbidden!!"
+        errorMessage: errorResponse.UNAUTHORIZED
       })
     }
   })

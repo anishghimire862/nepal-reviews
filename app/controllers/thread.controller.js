@@ -1,7 +1,13 @@
 const Thread = require('../models/thread.md.model');
 const Review = require('../models/review.md.model');
-const User = require('../models/user.md.model');
 const ObjectId = require('mongodb').ObjectID;
+
+const errorResponse = require('../response/error.response');
+const successResponse = require('../response/success.response');
+
+const Utilities = require('../utility/utilities');
+const ThreadDb = require('../db/ThreadDb');
+const responseMapper = require('../utility/response.mapper');
 
 function create (req, res) {
   let thread = new Thread();
@@ -23,59 +29,29 @@ function create (req, res) {
         message: err
       });
     } else {
-      res.json({
-        message: 'Thread created successfully.',
-        data: data
+      Utilities.transform(data).then((transformedData) => {
+        res.json({
+          message: successResponse.SUCCESSFUL_CREATION,
+          data: transformedData
+        })
       })
     }
   })
 }
 
 exports.findAll = (req, res) => {
-  Thread.aggregate([
-    {
-      $lookup: {
-        from: "users",
-        localField: "user_id",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    { $unwind: {path: '$user', "preserveNullAndEmptyArrays": true }},
-    {
-      $lookup: {
-        from: "reviews",
-        localField: "_id",
-        foreignField: "thread_id",
-        as: "reviews"
-      }
-    },
-    { $unwind: {path: '$reviews', "preserveNullAndEmptyArrays": true }},
-    {
-      $group: {
-        _id: '$_id',
-        title: {$first: '$title'},
-        description: {$first: '$description'},
-        category: {$first: '$category'},
-        images: {$first: '$images'},
-        user_id: {$first: '$user_id'},
-        user: {$first: '$user'},
-        average_rating: { $avg : '$reviews.rating' },
-        // reviews: {$push: {
-        //   review: '$reviews',
-        //   user: '$user'
-        // }}
-      }
-    }
-  ]).exec(function(err, data) {
+  ThreadDb.findAll().exec(function(err, data) {
+
+
     if(data) {
-      res.send(data)
+      res.json(responseMapper.toResponse(data))
     }
     else {
-      res.send(err)
+      console.log(err)
     }
   });
 };
+
 
 exports.findOne = (req, res) => {
   let threadId = req.params.threadId;
@@ -117,6 +93,20 @@ exports.findOne = (req, res) => {
         //   review: '$reviews',
         //   user: '$user'
         // }}
+      }
+    },
+    {
+      "$project": {
+        "_id": 1,
+        "title": 1,
+        "description": 1,
+        "category": 1,
+        "images": 1,
+        "user_id": 1,
+        "user._id": 1,
+        "user.username": 1,
+        "user.email": 1,
+        "average_rating": 1
       }
     }
   ]).exec(function (err, data) {
@@ -160,12 +150,15 @@ exports.update = (req, res) => {
           thread.save(function(err, data) {
             if(err)
               res.send(err)
-            res.send(data)
+            res.json({
+              data: data,
+              message: successResponse.SUCCESSFUL_UPDATE
+            })
           })
         })
       } else {
-        res.json({
-          message: "Forbidden!!"
+        res.status(403).json({
+          errorMessage: errorResponse.UNAUTHORIZED
         })
       }
     }
@@ -187,13 +180,12 @@ exports.delete = (req, res) => {
         if(err)
           res.send(err)
         res.json({
-          status: "success",
-          message: "Deleted successfully"
+          message: successResponse.SUCCESSFUL_DELETION
         })
       })
     } else {
-      res.json({
-        message: "Forbidden!!"
+      res.status(403).json({
+        errorMessage: errorResponse.UNAUTHORIZED
       })
     }
   })
