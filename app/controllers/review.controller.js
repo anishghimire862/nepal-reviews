@@ -1,6 +1,9 @@
 const Review = require('../models/review.md.model');
 const ObjectId = require('mongodb').ObjectID;
 
+const ReviewDb = require('../db/ReviewDb');
+const responseMapper = require('../utility/response.mapper');
+
 const errorResponse = require('../response/error.response');
 const successResponse = require('../response/success.response');
 
@@ -17,21 +20,7 @@ function create (req, res) {
           errorMessage: errorResponse.REVIEW_ALREADY_EXISTS
         })
       } else {
-        let review = new Review();
-        review.images = [];
-        review.description = req.body.description
-        review.rating = req.body.rating
-        review.user_id = req.user.userId
-        review.thread_id = req.body.threadId
-        
-        if(req.files) {
-          const files = req.files;
-          for(let file of files) {
-            review.images.push(file.filename);
-          }
-        }
-
-        review.save(function(err, data) {
+        ReviewDb.create(req).save(function(err, data) {
           if(err) {
             res.json({
               message: err
@@ -39,7 +28,7 @@ function create (req, res) {
           } else {
             res.json({
               message: successResponse.SUCCESSFUL_CREATION,
-              data: data
+              data: responseMapper.reviewCreationResponse(data)
             })
           }
         })
@@ -50,46 +39,9 @@ function create (req, res) {
 
 exports.findAll = (req, res) => {
   let threadId = req.params.threadId;
-  Review.aggregate([
-    {
-      $match: {
-        thread_id: ObjectId(threadId)
-      }
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "user_id",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    { $unwind: {path: '$user', "preserveNullAndEmptyArrays": true }},
-    {
-      $group: {
-        _id: '$_id',
-        description: {$first: '$description'},
-        images: {$first: '$images'},
-        rating: {$first: '$rating'},
-        user_id: {$first: '$user_id'},
-        user: {$first: '$user'}
-      }
-    },
-    {
-      "$project": {
-        "_id": 1,
-        "description": 1,
-        "images": 1,
-        "rating": 1,
-        "user_id": 1,
-        "user._id": 1,
-        "user.username": 1,
-        "user.email": 1
-      }
-    }
-  ]).exec(function (err, data) {
+  ReviewDb.findAll(threadId).exec(function (err, data) {
     if(data) {
-      res.send(data);
+      res.json(responseMapper.toGetAllReviewsResponse(data));
     } else {
       res.status(500).send({
         message: err
@@ -103,7 +55,7 @@ exports.findOne = (req, res) => {
 	Review.findOne({_id: reviewId}, function(err, data) {
     if(err)
       res.json(err)
-    res.json(data)
+    res.json(responseMapper.toGetOneReviewResponse(data))
   })
 };
 
@@ -137,7 +89,7 @@ exports.update = (req, res) => {
           review.save(function(err, data) {
             if(err)
               res.send(err)
-            res.json({data: data, message: successResponse.SUCCESSFUL_UPDATE })
+            res.json({data: responseMapper.reviewCreationResponse(data), message: successResponse.SUCCESSFUL_UPDATE })
           })
         })
       } else {

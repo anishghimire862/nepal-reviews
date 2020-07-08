@@ -10,30 +10,15 @@ const ThreadDb = require('../db/ThreadDb');
 const responseMapper = require('../utility/response.mapper');
 
 function create (req, res) {
-  let thread = new Thread();
-  thread.images = [];
-  thread.title = req.body.title;
-  thread.description = req.body.description;
-  thread.category = req.body.category;
-  thread.user_id = req.user.userId;
-
-  if(req.files) {
-    const files = req.files;
-    for(let file of files) {
-      thread.images.push(file.filename);
-    }
-  }
-  thread.save(function(err, data) {
+  ThreadDb.create(req).save(function(err, data) {
     if(err) {
       res.json({
         message: err
       });
     } else {
-      Utilities.transform(data).then((transformedData) => {
-        res.json({
-          message: successResponse.SUCCESSFUL_CREATION,
-          data: transformedData
-        })
+      res.json({
+        message: successResponse.SUCCESSFUL_CREATION,
+        data: responseMapper.threadCreationResponse(data)
       })
     }
   })
@@ -41,10 +26,8 @@ function create (req, res) {
 
 exports.findAll = (req, res) => {
   ThreadDb.findAll().exec(function(err, data) {
-
-
     if(data) {
-      res.json(responseMapper.toResponse(data))
+      res.json(responseMapper.toGetAllThreadsResponse(data))
     }
     else {
       console.log(err)
@@ -55,63 +38,9 @@ exports.findAll = (req, res) => {
 
 exports.findOne = (req, res) => {
   let threadId = req.params.threadId;
-  Thread.aggregate([
-    {
-      $match: {
-        _id: ObjectId(threadId)
-      }
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "user_id",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    { $unwind: {path: '$user', preserveNullAndEmptyArrays: true} },
-    {
-      $lookup: {
-        from: "reviews",
-        localField: "_id",
-        foreignField: "thread_id",
-        as: "reviews"
-      }
-    },
-    {$unwind: {path: '$reviews', preserveNullAndEmptyArrays: true}},
-    {
-      $group: {
-        _id: '$_id',
-        title: {$first: '$title'},
-        description: {$first: '$description'},
-        category: {$first: '$category'},
-        images: {$first: '$images'},
-        user_id: {$first: '$user_id'},
-        user: {$first: '$user'},
-        average_rating: { $avg : '$reviews.rating' },
-        // reviews: {$push: {
-        //   review: '$reviews',
-        //   user: '$user'
-        // }}
-      }
-    },
-    {
-      "$project": {
-        "_id": 1,
-        "title": 1,
-        "description": 1,
-        "category": 1,
-        "images": 1,
-        "user_id": 1,
-        "user._id": 1,
-        "user.username": 1,
-        "user.email": 1,
-        "average_rating": 1
-      }
-    }
-  ]).exec(function (err, data) {
+  ThreadDb.findOne(threadId).exec(function (err, data) {
     if(data) {
-      res.send(data);
+      res.json(responseMapper.toGetOneThreadResponse(data[0]));
     } else {
       res.status(500).send({
         message: "Error retriving a thread."
@@ -151,7 +80,7 @@ exports.update = (req, res) => {
             if(err)
               res.send(err)
             res.json({
-              data: data,
+              data: responseMapper.threadCreationResponse(data),
               message: successResponse.SUCCESSFUL_UPDATE
             })
           })
