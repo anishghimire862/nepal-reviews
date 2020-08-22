@@ -34,7 +34,7 @@ if(!mongoDb)
 else
   console.log("Db connected successfully -- MongoDB")
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8082;
 
 if(process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {

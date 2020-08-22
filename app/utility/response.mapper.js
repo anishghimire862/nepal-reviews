@@ -78,7 +78,8 @@ exports.toGetAllReviewsResponse = function toGetAllReviewsResponse(data) {
 }
 
 exports.toGetOneReviewResponse = function toGetOneReviewResponse(data) {
-  let response = {
+   console.log(data) 
+   let response = {
     id: data._id,
     description: data.description,
     images: data.images,

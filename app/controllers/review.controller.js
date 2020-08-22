@@ -55,6 +55,7 @@ exports.findOne = (req, res) => {
 	Review.findOne({_id: reviewId}, function(err, data) {
     if(err)
       res.json(err)
+      console.log(data)
     res.json(responseMapper.toGetOneReviewResponse(data))
   })
 };
