@@ -12,7 +12,8 @@ require('./app/config/passport');
 const app = express();
 
 var corsOptions = {
-  origin: "*"
+  origin: "*",
+  preFlightContinue: true
 };
 
 app.use(cors(corsOptions));

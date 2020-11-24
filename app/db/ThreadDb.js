@@ -30,7 +30,8 @@ exports.findAll = function() {
         images: {$first: '$images'},
         user_id: {$first: '$user_id'},
         user: {$first: '$user'},
-        average_rating: { $avg : '$reviews.rating' }
+        average_rating: { $avg : '$reviews.rating' },
+        created_at: { $first: '$created_at' }
         // reviews: {$push: {
         //   review: '$reviews',
         //   user: '$user'
@@ -49,6 +50,7 @@ exports.findAll = function() {
         "user.username": 1,
         "user.email": 1,
         "average_rating": 1,
+        "created_at": 1
       }
     }
   ])
@@ -89,6 +91,7 @@ exports.findOne = function(threadId) {
         user_id: {$first: '$user_id'},
         user: {$first: '$user'},
         average_rating: { $avg : '$reviews.rating' },
+        created_at: { $first: '$created_at' }
         // reviews: {$push: {
         //   review: '$reviews',
         //   user: '$user'
@@ -106,7 +109,8 @@ exports.findOne = function(threadId) {
         "user._id": 1,
         "user.username": 1,
         "user.email": 1,
-        "average_rating": 1
+        "average_rating": 1,
+        "created_at": 1
       }
     }
   ])

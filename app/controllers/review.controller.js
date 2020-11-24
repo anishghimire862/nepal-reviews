@@ -127,4 +127,32 @@ exports.delete = (req, res) => {
     }
   })
 };
+
+exports.deleteReviewImage = (req, res) => {
+  const reviewId = req.params.reviewId;
+  const image = req.params.image;
+  Review.findById(reviewId, function(err, review) {
+    if(err) 
+      res.send(err)
+    let creator = review.user_id
+    let loggedInUser = req.user.userId
+    if(creator == loggedInUser) {
+      Review.update(
+        { _id: reviewId }, { $pull: { images:  image  } }, { safe: true, upsert: true },
+        function (err, data) {
+          if(err)
+            console.log(err)
+            res.json({
+              message: successResponse.SUCCESSFUL_DELETION
+            })
+        }
+      )
+    } else {
+      res.status(403).json({
+        errorMessage: errorResponse.UNAUTHORIZED
+      })
+    }
+  })
+}
+
 module.exports.create = create

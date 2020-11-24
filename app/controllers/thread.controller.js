@@ -120,6 +120,33 @@ exports.delete = (req, res) => {
   })
 };
 
+exports.deleteThreadImage = (req, res) => {
+  const threadId = req.params.threadId;
+  const image = req.params.image;
+  Thread.findById(threadId, function(err, thread) {
+    if(err) 
+      res.send(err)
+    let creator = thread.user_id
+    let loggedInUser = req.user.userId
+    if(creator == loggedInUser) {
+      Thread.update(
+        { _id: threadId }, { $pull: { images:  image  } }, { safe: true, upsert: true },
+        function (err, data) {
+          if(err)
+            console.log(err)
+            res.json({
+              message: successResponse.SUCCESSFUL_DELETION
+            })
+        }
+      )
+    } else {
+      res.status(403).json({
+        errorMessage: errorResponse.UNAUTHORIZED
+      })
+    }
+  })
+}
+
 exports.findStarOfCurrentUser = (req, res) => {
   const threadId = req.params.threadId;
   const userId = req.params.userId;

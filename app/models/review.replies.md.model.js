@@ -1,23 +1,21 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var reviewSchema = new Schema({
+var reviewRepliesSchema = new Schema({
   description: {
-    type: String
-  },
-  rating: {
-    type: Number,
+    type: String,
+    required: true
   },
   images: {
     type: Array
   },
-  thread_id: {
-    type: Schema.ObjectId,
-    ref: "Thread"
-  },
   user_id: {
     type: Schema.ObjectId,
     ref: "User"
+  },
+  review_id: {
+    type: Schema.ObjectId,
+    ref: "Review"
   },
   created_at: {
     type: Date,
@@ -25,7 +23,7 @@ var reviewSchema = new Schema({
   }
 });
 
-var Review = module.exports = mongoose.model('review', reviewSchema);
+var ReviewReplies = module.exports = mongoose.model('reviewReplies', reviewRepliesSchema);
 module.exports.get = function (callback, limit) {
-  Review.find(callback).limit(limit);
+  ReviewReplies.find(callback).limit(limit);
 }

@@ -1,28 +1,28 @@
-const Review = require('../models/review.md.model');
+const Reply = require('../models/review.replies.md.model');
 const ObjectId = require('mongodb').ObjectID;
 
 exports.create = function(req) {
-  let review = new Review();
-  review.images = [];
-  review.description = req.body.description
-  review.rating = req.body.rating
-  review.user_id = req.user.userId
-  review.thread_id = req.body.threadId
-  
+  let reply = new Reply();
+  reply.images = [];
+  reply.description = req.body.description;
+  reply.user_id = req.user.userId;
+  reply.review_id = req.body.reviewId;
+
   if(req.files) {
     const files = req.files;
     for(let file of files) {
-      review.images.push(file.filename);
+      reply.images.push(file.filename);
     }
   }
-  return review
+  return reply
 }
 
-exports.findAll = function(threadId) {
-  return Review.aggregate([
+exports.findAll = function(reviewId) {
+  console.log(reviewId)
+  return Reply.aggregate([
     {
       $match: {
-        thread_id: ObjectId(threadId)
+        review_id: ObjectId(reviewId)
       }
     },
     {
@@ -39,7 +39,6 @@ exports.findAll = function(threadId) {
         _id: '$_id',
         description: {$first: '$description'},
         images: {$first: '$images'},
-        rating: {$first: '$rating'},
         user_id: {$first: '$user_id'},
         created_at: {$first: '$created_at'},
         user: {$first: '$user'}
@@ -50,7 +49,6 @@ exports.findAll = function(threadId) {
         "_id": 1,
         "description": 1,
         "images": 1,
-        "rating": 1,
         "created_at": 1,
         "user_id": 1,
         "user._id": 1,
